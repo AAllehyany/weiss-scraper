@@ -1,0 +1,15 @@
+[
+  {
+    "name": "After the Battle, Rimuru",
+    "set_code": "TSK/S70-E001",
+    "rarity": "RR",
+    "soul": 1,
+    "card_type": 1,
+    "level": 0,
+    "color": 1,
+    "power": 1500,
+    "text": "【AUTO】 [(1) Put the top card of your deck into your clock] When this card is placed on the stage from your hand, you may pay the cost. If you do, search your deck for up to 1 level 1 or lower character, reveal it to your opponent, put it into your hand, and shuffle your deck.【AUTO】 [Put 1 card from your hand into your waiting room] When this card is placed on the stage from your hand, you may pay the cost. If you do, choose 1 of your opponent's level 0 or lower characters, and return it to his or her hand.",
+    "triggers": [],
+    "traits": "Demon Continent・Slime"
+  }
+]
