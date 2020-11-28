@@ -2,8 +2,10 @@ const Axios = require('axios');
 const cheerio = require('cheerio');
 const Fs = require('fs');
 const Path = require('path');
+const { title } = require('process');
 const BASE_URL = "https://en.ws-tcg.com/cardlist/list/";
-const FIRST_CARD = ".?cardno=TSK/S70-E001";
+const FIRST_CARD = "?cardno=AOT/S35-TE01";
+const BUCKET = 'https://s3.us-west-1.wasabisys.com/decks-project/card_images/';
 
 const getHTML = async (cardNo) => {
     try {
@@ -62,9 +64,9 @@ const getTHContains = ($, value) => {
 
 const mapCardtype = (card_type) => {
     switch(card_type.toLowerCase()) {
-        case 'character': return 1;
-        case 'event': return 2;
-        case 'climax': return 3;
+        case 'character': return 0;
+        case 'event': return 1;
+        case 'climax': return 2;
     }
 };
 
@@ -97,6 +99,7 @@ const extractCard = async (page, $) => {
     const soul = $(getTHContains($, 'Soul')).next().find('img');
     const triggers = $(getTHContains($, 'Trigger')).next().find('img');
     const level = $(getTHContains($, 'Level')).next().text().trim();
+    const cost = $(getTHContains($, 'Cost')).next().text().trim();
     const color = $(getTHContains($, "Color")).next().find('img').attr('src').split('/');
     const power = $(getTHContains($, "Power")).next().text().trim();
     const text = $(getTHContains($, "Text")).next().text().trim();
@@ -105,13 +108,14 @@ const extractCard = async (page, $) => {
 
     const imgParts = img.split('/')
     
-    
+    const title_code = set_code.split('/')[0];
     card["name"] = cardName;
     card["set_code"] = set_code;
     card["rarity"] = rarity;
     card["soul"] = soul.length || 0;
     card["card_type"] = mapCardtype(card_type);
     card["level"] = toNumber(level);
+    card["cost"] = toNumber(cost);
     card["color"] = mapColor(color[color.length - 1].split('.')[0]);
     card["power"] = toNumber(power);
     card["text"] = text;
@@ -120,11 +124,13 @@ const extractCard = async (page, $) => {
         const trigger = parts[parts.length - 1].split('.')[0];
         return trigger;
     }).get();
+    card["title_code"] = title_code;
 
     card["traits"] = traits;
     card.game = 'WS';
-
-    await downloadImage(BASE_URL+img, imgParts[imgParts.length - 1]);
+    const imgName = imgParts[imgParts.length - 1];
+    card["image_url"] = BUCKET + imgName;
+    await downloadImage(BASE_URL+img, imgName);
     return card;
 }
 
